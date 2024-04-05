@@ -225,13 +225,13 @@ window.Quarto = {
 <h1>Bias Replication Study</h1>
 <section id="abstract" class="level2">
 <h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
-<p>This data frame represents disparities in medical data, including medical cost, risk score, and number of chronic illnesses, between Black and white patients. The plots shown are visual representations of such disparities, with clear distinctions between the costs incurred by Black and white patients and the likelihood of being referred to a high-risk medical program for a given number of illnesses. The linear regression I performed displays logarithmic coefficient w_b, which, when presented as <span class="math inline">\(e^(w_b)\)</span>, represents the percentage of a white patient’s cost that a Black patient must pay. My calculation revealed that a Black patient pays over 100% of what a white patient pays for the same illness(es).</p>
-<div id="cell-1" class="cell" data-execution_count="18">
+<p>This data frame represents disparities in medical data, including medical cost, risk score, and number of chronic illnesses, between Black and white patients. The plots shown are visual representations of such disparities, replicating studies by Obermeyer et al.&nbsp;in 2019 article “Dissecting Racial Bias in an Algorithm Used to Manage the Health of Populations.” These plots show clear distinctions between the costs incurred by Black and white patients and the likelihood of being referred to a high-risk medical program for a given number of illnesses. The linear regression I performed displays logarithmic coefficient w_b, which, when presented as <span class="math inline">\(e^(w_b)\)</span>, represents the percentage of a white patient’s cost that a Black patient must pay. My calculation revealed that a Black patient pays over 100% of what a white patient pays for the same illness(es), supporting the idea that racial disparities are prevalent in healthcare.</p>
+<div id="cell-1" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">"https://gitlab.com/labsysmed/dissecting-bias/-/raw/master/data/data_new.csv?inline=false"</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(url)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="18">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
 
@@ -534,7 +534,11 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="cell-2" class="cell" data-execution_count="102">
+</section>
+<section id="finding-disparities-in-risk-score-percentile-by-mean-chronic-illnesses" class="level2">
+<h2 class="anchored" data-anchor-id="finding-disparities-in-risk-score-percentile-by-mean-chronic-illnesses">Finding Disparities in Risk Score Percentile by Mean Chronic Illnesses</h2>
+<p>In this figure we plot risk score percentile by the mean number of chronic illnesses within each percentile, with data points separated by race. Here we see a clear difference between races, with white patients more likely to be given a higher risk score than Black patients with the same number of chronic illnesses. If Patient A were white and Patient B were Black, and both patients had the same chronic illnesses, Patient A would be significantly more likely to have a higher risk score and be referred to a high-risk care management program.</p>
+<div id="cell-3" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -561,104 +565,114 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>In this figure we plot risk score percentile by the mean number of chronic illnesses within each percentile, with data points separated by race. Here we see a clear difference between races, with white patients more likely to be given a higher risk score than Black patients with the same number of chronic illnesses. If Patient A were white and Patient B were Black, and both patients had the same chronic illnesses, Patient A would be significantly more likely to have a higher risk score and be referred to a high-risk care management program.</p>
-<div id="cell-4" class="cell" data-execution_count="108">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+</section>
+<section id="racial-disparity-in-medical-expenses-by-chronic-illnesses-and-risk-score" class="level2">
+<h2 class="anchored" data-anchor-id="racial-disparity-in-medical-expenses-by-chronic-illnesses-and-risk-score">Racial Disparity in Medical Expenses by Chronic Illnesses and Risk Score</h2>
+<p>Here we explore differences in cost incurred by Black and white patients with various risk scores and various numbers of chronic illnesses. These figures suggest that, for Black patients, as risk score and number of chronic illnesses increase, medical expenditures increase at a higher rate than that of white patients. For lower risk scores and chronic illness counts, white patients seem to have slightly higher medical costs than for Black patients, but it appears as though Black patients are penalized more severely for having more illnesses and being of higher risk.</p>
+<div id="cell-5" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#group data with risk score percentile and cost</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>df_cost <span class="op">=</span> df.groupby([<span class="st">'risk_score_percentile'</span>, <span class="st">'race'</span>])[<span class="st">'cost_t'</span>].mean().reset_index()</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df_cost2 <span class="op">=</span> df.groupby([<span class="st">'gagne_sum_t'</span>, <span class="st">'race'</span>])[<span class="st">'cost_t'</span>].mean().reset_index()</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#make two subplots with the same y-axis</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, sharey<span class="op">=</span><span class="va">True</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>p1 <span class="op">=</span> sns.scatterplot(data<span class="op">=</span>df_cost, x<span class="op">=</span><span class="st">'risk_score_percentile'</span>, y<span class="op">=</span><span class="st">'cost_t'</span>, hue<span class="op">=</span><span class="st">'race'</span>, style<span class="op">=</span><span class="st">'race'</span>, ax <span class="op">=</span> ax1)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Percentile Risk Score'</span>)</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Total Medical Expenditures'</span>)</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>plt.gca().semilogy()</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>p2 <span class="op">=</span> sns.scatterplot(data<span class="op">=</span>df_cost2, x<span class="op">=</span><span class="st">'gagne_sum_t'</span>, y<span class="op">=</span><span class="st">'cost_t'</span>, hue<span class="op">=</span><span class="st">'race'</span>, style<span class="op">=</span><span class="st">'race'</span>, ax <span class="op">=</span> ax2)</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Number of chronic illnesses'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="108">
-<pre><code>Text(0, 0.5, 'Total Medical Expenditures')</code></pre>
-</div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#group data with number of chronic illnesses and cost</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>df_cost2 <span class="op">=</span> df.groupby([<span class="st">'gagne_sum_t'</span>, <span class="st">'race'</span>])[<span class="st">'cost_t'</span>].mean().reset_index()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>fig, (ax1, ax2) <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, sharey<span class="op">=</span><span class="va">True</span>, figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#plot cost by percentile risk score</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>p1 <span class="op">=</span> sns.scatterplot(data<span class="op">=</span>df_cost, x<span class="op">=</span><span class="st">'risk_score_percentile'</span>, y<span class="op">=</span><span class="st">'cost_t'</span>, hue<span class="op">=</span><span class="st">'race'</span>, style<span class="op">=</span><span class="st">'race'</span>, ax <span class="op">=</span> ax1)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>p1.set_xlabel(<span class="st">'Percentile Risk Score'</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>p1.set_ylabel(<span class="st">'Total Medical Expenditures'</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>plt.gca().semilogy()</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#plot cost by number of chronic illnesses</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>p2 <span class="op">=</span> sns.scatterplot(data<span class="op">=</span>df_cost2, x<span class="op">=</span><span class="st">'gagne_sum_t'</span>, y<span class="op">=</span><span class="st">'cost_t'</span>, hue<span class="op">=</span><span class="st">'race'</span>, style<span class="op">=</span><span class="st">'race'</span>, ax <span class="op">=</span> ax2)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>p2.set_xlabel(<span class="st">'Number of Chronic Illnesses'</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>p2.set_ylabel(<span class="st">'Total Medical Expenditures'</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>plt.gca().semilogy()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="Bias-Replication_files/figure-html/cell-4-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="Bias-Replication_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>These figures suggest that, for Black patients, as risk score and number of chronic illnesses increase, medical expenditures increase at a higher rate than that of white patients. For lower risk scores and chronic illness counts, white patients seem to have slightly higher medical costs than for Black patients, but it appears as though Black patients are penalized more severely for having more illnesses and being of higher risk.</p>
-<div id="cell-6" class="cell" data-execution_count="80">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the percentage of patients with 5 or fewer chronic conditions</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>percentage <span class="op">=</span> (<span class="bu">len</span>(df[df[<span class="st">'gagne_sum_t'</span>] <span class="op">&lt;=</span> <span class="dv">5</span>]) <span class="op">/</span> <span class="bu">len</span>(df)) <span class="op">*</span> <span class="dv">100</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 95.53952115447689 - choice to use patients with 5 or fewer chronic conditions makes sense, </span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># as 96% of patients have 5 or fewer chronic conditions.</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Eliminate subjects with 0 cost, perform log function on cost column</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[df[<span class="st">'cost_t'</span>] <span class="op">&gt;</span> <span class="dv">0</span>]</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'log_cost'</span>] <span class="op">=</span> df[<span class="st">'cost_t'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.log(x))</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dummy column for the race variable</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'race_encoded'</span>] <span class="op">=</span> pd.get_dummies(df[<span class="st">'race'</span>], drop_first<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate the data into predictor variables (X) and target variable (y)</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df[[<span class="st">'race_encoded'</span>, <span class="st">'gagne_sum_t'</span>]]</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">'log_cost'</span>]</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="refining-data-to-patients-with-5-or-fewer-chronic-conditions" class="level3">
+<h3 class="anchored" data-anchor-id="refining-data-to-patients-with-5-or-fewer-chronic-conditions">Refining Data to Patients with 5 or fewer Chronic Conditions</h3>
+<div id="cell-7" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the percentage of patients with 5 or fewer chronic conditions</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>percentage <span class="op">=</span> (<span class="bu">len</span>(df[df[<span class="st">'gagne_sum_t'</span>] <span class="op">&lt;=</span> <span class="dv">5</span>]) <span class="op">/</span> <span class="bu">len</span>(df)) <span class="op">*</span> <span class="dv">100</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 95.53952115447689 - choice to use patients with 5 or fewer chronic conditions makes sense, </span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># as 96% of patients have 5 or fewer chronic conditions.</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Eliminate subjects with 0 cost, perform log function on cost column</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df[df[<span class="st">'cost_t'</span>] <span class="op">&gt;</span> <span class="dv">0</span>]</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'log_cost'</span>] <span class="op">=</span> df[<span class="st">'cost_t'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: np.log(x))</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a dummy column for the race variable</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'race_encoded'</span>] <span class="op">=</span> pd.get_dummies(df[<span class="st">'race'</span>], drop_first<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Separate the data into predictor variables (X) and target variable (y)</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> df[[<span class="st">'race_encoded'</span>, <span class="st">'gagne_sum_t'</span>]]</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> df[<span class="st">'log_cost'</span>]</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="cell-7" class="cell" data-execution_count="119">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> PolynomialFeatures</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to add polynomial features</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_polynomial_features(X, degree):</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    X_ <span class="op">=</span> X.copy()</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, degree):</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        X_[<span class="ss">f"poly_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">"</span>] <span class="op">=</span> X_[<span class="st">"gagne_sum_t"</span>]<span class="op">**</span>j</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X_</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create different degrees of polynomial features and compute cross-validation scores</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">15</span>)</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> []</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> degree <span class="kw">in</span> degrees:</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add polynomial features</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    X_poly <span class="op">=</span> add_polynomial_features(X, degree)</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Perform cross-validation with linear regression</span></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    lr <span class="op">=</span> LinearRegression()</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    cv_score <span class="op">=</span> cross_val_score(lr, X_poly, y, cv<span class="op">=</span><span class="dv">5</span>).mean()</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    scores.append(cv_score)</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine the optimal degree based on cross-validation scores</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>optimal_degree <span class="op">=</span> degrees[np.argmax(scores)]</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Optimal degree based on cross-validation:"</span>, optimal_degree)</span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct data with the optimal number of polynomial features</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>X_poly_optimal <span class="op">=</span> add_polynomial_features(X, optimal_degree)</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the final linear regression model</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>lr_final <span class="op">=</span> LinearRegression()</span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>lr_final.fit(X_poly_optimal, y)</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Get coefficients of the linear regression model</span></span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>coefficients <span class="op">=</span> lr_final.coef_</span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the coefficient corresponding to the Black race</span></span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>wb <span class="op">=</span> coefficients[<span class="op">-</span><span class="dv">1</span>]</span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"w_b: "</span>, wb)</span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute e^wb</span></span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>e_wb <span class="op">=</span> np.exp(wb)</span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"e^w_b: "</span>, e_wb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="logistic-regression-for-medical-costs-given-number-of-chronic-illnesses." class="level2">
+<h2 class="anchored" data-anchor-id="logistic-regression-for-medical-costs-given-number-of-chronic-illnesses.">Logistic Regression for Medical Costs Given Number of Chronic Illnesses.</h2>
+<div id="cell-9" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LinearRegression</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> cross_val_score</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> PolynomialFeatures</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Function to add polynomial features</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_polynomial_features(X, degree):</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    X_ <span class="op">=</span> X.copy()</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, degree):</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        X_[<span class="ss">f"poly_</span><span class="sc">{</span>j<span class="sc">}</span><span class="ss">"</span>] <span class="op">=</span> X_[<span class="st">"gagne_sum_t"</span>]<span class="op">**</span>j</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X_</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Create different degrees of polynomial features and compute cross-validation scores</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>degrees <span class="op">=</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">15</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>scores <span class="op">=</span> []</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> degree <span class="kw">in</span> degrees:</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add polynomial features</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    X_poly <span class="op">=</span> add_polynomial_features(X, degree)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Perform cross-validation with linear regression</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    lr <span class="op">=</span> LinearRegression()</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    cv_score <span class="op">=</span> cross_val_score(lr, X_poly, y, cv<span class="op">=</span><span class="dv">5</span>).mean()</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    scores.append(cv_score)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine the optimal degree based on cross-validation scores</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>optimal_degree <span class="op">=</span> degrees[np.argmax(scores)]</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Optimal degree based on cross-validation:"</span>, optimal_degree)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct data with the optimal number of polynomial features</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>X_poly_optimal <span class="op">=</span> add_polynomial_features(X, optimal_degree)</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the final linear regression model</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>lr_final <span class="op">=</span> LinearRegression()</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>lr_final.fit(X_poly_optimal, y)</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Get coefficients of the linear regression model</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>coefficients <span class="op">=</span> lr_final.coef_</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the coefficient corresponding to the Black race</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>wb <span class="op">=</span> coefficients[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"w_b: "</span>, wb)</span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute e^wb</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>e_wb <span class="op">=</span> np.exp(wb)</span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"e^w_b: "</span>, e_wb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Optimal degree based on cross-validation: 10
 w_b:  9.390071033164823e-08
@@ -666,6 +680,10 @@ e^w_b:  1.0000000939007148</code></pre>
 </div>
 </div>
 <p>This linear regression model worked best with cross validation on 10 polynomial degrees. After fitting the final linear regression model, the value I received for e^(w_b) was 1.0000000939007148, indicating that a Black patient pays slightly over 100% of the cost that an equally sick white patient must pay.</p>
+</section>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
+<p>The above plots give visual representations of racial disparities in medical care, and the logistic regression models slight disparities in cost incurred by equally sick patients. However, while this value of slightly more than 100% may seem like only a minor difference, it could be suggested that the value extracted from the regression does not account for the kinds of disparities that are present. As we see in the Medical Expenditure Plots above, as Risk Score Percentile and Number of Chronic Illnesses increase, so does the different in cost between Black and white patients. While white patients might pay as much as or more than Black patients for lower-risk, less severe conditions, Black patients are financially penalized as their conditions become more severe, and the logistic regression does not account for this idea. The plots clearly model differences in the way Black and white patients are treated, specifically of Barocas et al’s discrimination criterion of “outcome frequency given score value”. If these observations were “fair”, statistics for Black and white patients would be about equal, given that their medical conditions are identical. However, we do see clear outliers and differing trends between patients of different race but identical medical conditions, scoring Black patients at significantly lower risk than equally sick white patients and with high-risk Black patients incurring significantly higher medical costs than equally sick white patients.</p>
 
 
 </section>
