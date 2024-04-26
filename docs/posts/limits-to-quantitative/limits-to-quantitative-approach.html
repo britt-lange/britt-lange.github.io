@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>My Awesome CSCI 0451 Blog</title>
+<title>My Awesome CSCI 0451 Blog - Limits to the Quantitative Approach to Bias and Fairness</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,27 +20,45 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,35 +86,6 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
 <style>
 
       .quarto-title-block .quarto-title-banner h1,
@@ -111,52 +100,23 @@ ul.task-list li input[type="checkbox"] {
 
       .quarto-title-block .quarto-title-banner {
         color: white;
-background-image: url(img/landscape.png);
+background-image: url(../../img/landscape.png);
 background-size: cover;
       }
 </style>
 
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">My Awesome CSCI 0451 Blog</span>
     </a>
   </div>
@@ -167,7 +127,7 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
@@ -190,13 +150,13 @@ window.Quarto = {
 <!-- content -->
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
-    <div class="quarto-title column-page-left">
-      <h1 class="title">My Awesome CSCI 0451 Blog</h1>
+    <div class="quarto-title column-body">
+      <h1 class="title">Limits to the Quantitative Approach to Bias and Fairness</h1>
                       </div>
   </div>
     
   
-  <div class="quarto-title-meta column-page-left">
+  <div class="quarto-title-meta">
 
       
     
@@ -204,74 +164,59 @@ window.Quarto = {
     </div>
     
   
-  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div></div></div>
+    
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content quarto-banner-title-block" id="quarto-document-content">
 
 
 
 
 
+<p>In his 2022 lecture, “Limits of the quantitative approach to discrimination,” Arvind Narayanan discusses significant drawbacks in attempts to quantify bias in machine learning and data, arguing that they “do more harm than good.” He opens his speech declaring the intention to “help people see past the myth that numbers don’t lie,” and delves into an analysis of ProPublica’s Machine Bias investigation of Florida’s Broward County criminal risk prediction data, which exposed that Black defendants were nearly twice as likely as white defendants to be falsely flagged as potential reoffenders.</p>
+<p>This study reflects ideas of quantitative fairness discussed by <span class="citation" data-cites="barocas2023">Barocas, Hardt, and Narayanan (<a href="#ref-barocas2023" role="doc-biblioref">2023</a>)</span>, with error rate parity as a candidate for a fairness measure and Black and white defendants as groups to be classified. While error rates between groups might be similar, the differences in types of errors made between groups and the harmful effects of these errors must be analyzed, as the effect on an individual of being falsely flagged as a reoffender can be far more harmful to a person than being falsely flagged as a non-reoffender. Narayanan draws attention to the subjectivity involved in scientists’ “tentative conclusions in the face of incomplete evidence” <span class="citation" data-cites="narayanan2022">(<a href="#ref-narayanan2022" role="doc-biblioref">Narayanan 2022</a>)</span>. As an example, he points to statements made about a lack of evidence on COVID vaccines’ effectiveness against variants: “no evidence of vaccine effectiveness against variants” vs.&nbsp;“no evidence that vaccines are less effective against variants”. These two statements appear to be very similar, but they hold very different implications. Scientists must consciously decide how to phrase these conclusions to the public, and often the way these conclusions are presented to the public reflect individual scientists’ biases, though they are often accepted as reliable without question.</p>
+<p>This subjectivity can also be seen in null hypotheses. Narayanan points out that the virtually universal default assumption in science is that there is no discrimination, which allocates the “burden of proof” to those who either experience discrimination or believe that there could be discrimination involved <span class="citation" data-cites="narayanan2022">(<a href="#ref-narayanan2022" role="doc-biblioref">Narayanan 2022</a>)</span>. In reality, though, the null hypothesis could just as easily be that there is discrimination, in which case the burden of proof would fall on those believing there is no discrimination. Narayanan also points to issues with the data itself. Datasets are most often snapshots, representing a single point in time, and do not represent the fuller picture of possible discriminatory history for any given subject. This leads scientists to neglect the possible conclusion that disparities in data are due to discrimination, especially since most of the organizations in charge of collecting and releasing the data make discrete decisions that affect the conclusions that are drawn about the data.</p>
+<p>Narayanan names previous discrimination studies that compared subjects that were completely identical except for race. While these studies found significant differences in results between white subjects and Black subjects, Narayanan points out that controlling every single variable except race essentially discounts the possibility that other factors, such as neighborhood or wardrobe, could be involved in discrimination. As Narayanan powerfully phrases this idea, researchers “end up controlling for the attributes that together constitute the social construct of race” <span class="citation" data-cites="narayanan2022">(<a href="#ref-narayanan2022" role="doc-biblioref">Narayanan 2022</a>)</span>. This way, employers or other powerful groups can make decisions based on race-related factors without explicitly naming race as a factor, “explaining away” discriminatory attitudes.</p>
+<p><span class="citation" data-cites="barocas2023">Barocas, Hardt, and Narayanan (<a href="#ref-barocas2023" role="doc-biblioref">2023</a>)</span> explain this idea with independence between variables. As they point out, though, independence is not always Naming corporations such as Uber as participants in corrupt research, Narayanan demonstrates the harmful effects that this narrow data has on real people. He continues to warn that, because quantitative research is widely viewed as “objective”, many people in power have begun to adopt these deficient ideas, distributing “evidence” with narrow definitions of discrimination.</p>
+<p>Narayanan points to faulty AI tools that are used for hiring, which consider starkly irrelevant factors and give each candidate a score, at best equivalent to the result of a random number generator. While one would expect regulators, such as the Equal Employment Opportunity Commission, to catch these blatant misjudgments, the only measure of unfairness they recognize is disparate impact – concrete quantitative evidence that people of different races, genders, etc. are being accepted at different rates. Narayanan points out that this measure is amenable to quantitative research on snapshot datasets, enabling incomplete discrimination research to continue unquestioned.</p>
+<p>To conclude his speech, Narayanan advises quantitative researchers to go deeper. Rather than tailoring research questions to the available data, he implores people to take the extra time to collect, analyze, and interrogate timely, evocative data that transcends a simple snapshot. He advises researchers to spend time with and develop empathy for their research subjects, especially those harmed by discrimination, in order to best serve those affected. Narayanan suggests a future in which quantitative data can be examined alongside various other forms of critical evidence, recognized as a small part, but not all, of the big picture.</p>
+<p>Adding to this discussion on the efficacy and integrity of quantitative research, <span class="citation" data-cites="denison2021">Denison, Bevan, and Jeanes (<a href="#ref-denison2021" role="doc-biblioref">2021</a>)</span> conducted a narrative analysis of quantitative evidence of discrimination, specifically of LGBTQIA+ athletes in their respective sports, by examining the work of several researchers. Citing <span class="citation" data-cites="brackenridge2008">Brackenridge et al. (<a href="#ref-brackenridge2008" role="doc-biblioref">2008</a>)</span>, they point out that the observed lack of hard evidence of discrimination makes it easier to ignore the problems faced by those affected by unfair bias. Aiming to shed light on the available quantitative data surrounding LGBTQIA+ athletes, they describe the work of <span class="citation" data-cites="cunningham2018">Cunningham and Pickett (<a href="#ref-cunningham2018" role="doc-biblioref">2018</a>)</span> and <span class="citation" data-cites="macdonald2018">MacDonald (<a href="#ref-macdonald2018" role="doc-biblioref">2019</a>)</span>, through which over a quarter of surveyed male athletes reported discomfort with the idea of a homosexual teammate, with a higher percentage expressing discomfort with a transgender teammate. Similar studies were conducted from 2011 through 2020, demonstrating that a majority of male athletes, even those who reportedly supported same-sex marriage, regularly used homophobic language with their teammates. Believing their language to be harmless, as there were no openly gay players on their teams, these athletes disregarded the possibility that their exhibited attitudes might prevent a queer player from feeling comfortable enough to share their identity with their team.</p>
+<p>Continuing to report on studies surveying perspectives of LGBTQIA+ athletes, <span class="citation" data-cites="denison2021">Denison, Bevan, and Jeanes (<a href="#ref-denison2021" role="doc-biblioref">2021</a>)</span> reference the international study performed by <span class="citation" data-cites="menzel2019">Menzel, Braumuller, and Hartmann-Tews (<a href="#ref-menzel2019" role="doc-biblioref">2019</a>)</span> that collected self-reported data from LGBTQIA+ athletes from all EU countries. As Narayanan emphasizes, it is crucial in discrimination studies to hear from those negatively affected by bias. While many subjects of previously mentioned studies may not have believed that they were actively contributing to a harmful environment, the queer athletes that were surveyed provide compelling responses alluding to the existence of discrimination in sports. With over 5,500 LBGTQIA+ athletes completing their survey, <span class="citation" data-cites="menzel2019">Menzel, Braumuller, and Hartmann-Tews (<a href="#ref-menzel2019" role="doc-biblioref">2019</a>)</span> reported that 82% of participants had recently witnessed homophobic or transphobic behavior, and that 90% believed homophobia and transphobia to be current problems in sports. Similarly, <span class="citation" data-cites="denison2015">Denison and Kitchen (<a href="#ref-denison2015" role="doc-biblioref">2015</a>)</span> found that, from their pool of lesbian, gay, and bisexual subjects from six countries, 82% had experienced homophobia in sports. 73% of participants in this study also reported belief that it was not safe for queer youth to come out to their sports teams.</p>
+<p>As our culture has evolved over the past decades, blatant disrespect of specific subpopulations has become increasingly denounced. As social attitudes appear to be heading toward inclusivity on paper, with fewer people feeling comfortable to report discriminatory opinions, it becomes ever more difficult to provide quantitative evidence of discrimination; people can disguise their true feelings and explain away their discriminatory practices, such as using homophobic slurs. While <span class="citation" data-cites="denison2021">Denison, Bevan, and Jeanes (<a href="#ref-denison2021" role="doc-biblioref">2021</a>)</span> provide compelling self-reported data alluding to discrimination, the subjectivity involved in the collection of these responses may not be accepted with the finality that a more seemingly objective, quantitative report might be.</p>
+<p>For example, <span class="citation" data-cites="brackenridge2008">Brackenridge et al. (<a href="#ref-brackenridge2008" role="doc-biblioref">2008</a>)</span> report hesitancy on the part of sports managers and coaches to make any effort to mitigate potential harm due to the lack of “hard data/evidence”, demonstrating how much power quantitative research holds over society, even when there is plenty of self-reported discrimination being experienced. As Narayanan warns us to view quantitative data as only part of the picture, rather than the ultimate truth, the seemingly apathetic responses received from sports management demonstrate that instead of putting all faith into quantitative data, research should focus more on the experiences of individuals harmed by discriminatory attitudes.</p>
+<p>Narayanan’s points highlight the serious overestimation of quantitative data. When people but blind faith into what they believe to be concrete evidence, it allows for the discretion of quantitative researchers to determine the fate of populations who are harmed by unquantifiable but real discrimination. I agree that quantitative research should be more interrogative and critical, aiming to expose the truth rather than draw unfounded conclusions. Researchers should examine the reasons behind patterns in data and explore all possibilities beyond the surface of the data; if the null hypothesis were to be that discrimination is present, researchers could be motivated to find potential causes of harmful practices. I also agree that society should reallocate their faith in research, recognizing the limits of quantitative data and seeking out more holistic, personal modes of research. While quantitative data is an important part of scientific research and can reveal many important patterns, it does not constitute the whole, objective truth, and the research community as well as its audience should keep this in mind as they search for underlying causes.</p>
 
 
 
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-listing-file-modified-sort="1712337538239" data-listing-reading-time-sort="4" data-listing-word-count-sort="692">
-<div class="thumbnail">
-<p><a href="./posts/bias-replication-post/Bias-Replication.html" class="no-external"></a></p><a href="./posts/bias-replication-post/Bias-Replication.html" class="no-external">
-<p class="card-img-top"><img src="posts/bias-replication-post/Bias-Replication_files/figure-html/cell-3-output-1.png"  class="thumbnail-image card-img"/></p>
-</a><p><a href="./posts/bias-replication-post/Bias-Replication.html" class="no-external"></a></p>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-barocas2023" class="csl-entry" role="listitem">
+Barocas, Solon, Moritz Hardt, and Arvind Narayanan. 2023. <em>Fairness and Machine Learning: Limitations and Opportunities</em>. Cambridge, Massachusetts: The MIT Press.
 </div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/bias-replication-post/Bias-Replication.html" class="no-external">Bias Replication Study</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/bias-replication-post/Bias-Replication.html" class="no-external"></a>
+<div id="ref-brackenridge2008" class="csl-entry" role="listitem">
+Brackenridge, C., P. Aldred, A. Jarvis, I. Rivers, and K. Maddocks. 2008. <span>“Literature Review of Sexual Orientation in Sport.”</span> <em>Sport England</em>, 153.
 </div>
-<div class="listing-description">
-<a href="./posts/bias-replication-post/Bias-Replication.html" class="no-external">This data frame represents disparities in medical data, including medical cost, risk score, and number of chronic illnesses, between Black and white patients. The plots…<span class="math inline"></span></a>
+<div id="ref-cunningham2018" class="csl-entry" role="listitem">
+Cunningham, G. B., and A. C. Pickett. 2018. <span>“Trans Prejudice in Sport: Differences from LGB Prejudice, the Influence of Gender, and Changes over Time.”</span> <em>Sex Roles</em> 78 (3-4): 220–27. https://doi.org/<a href="https://doi.org/10.1007/s11199-017-0791-6">https://doi.org/10.1007/s11199-017-0791-6</a>.
 </div>
+<div id="ref-denison2021" class="csl-entry" role="listitem">
+Denison, E., N. Bevan, and R. Jeanes. 2021. <span>“Reviewing Evidence of LGBTQ+ Discrimination and Exclusion in Sport.”</span> <em>Sport Management Review</em> 24 (3): 389–409. https://doi.org/<a href="https://doi.org/10.1016/j.smr.2020.09.003">https://doi.org/10.1016/j.smr.2020.09.003</a>.
 </div>
-<div class="metadata">
-<p><a href="./posts/bias-replication-post/Bias-Replication.html" class="no-external"></a></p><a href="./posts/bias-replication-post/Bias-Replication.html" class="no-external">
-</a>
+<div id="ref-denison2015" class="csl-entry" role="listitem">
+Denison, E., and A. Kitchen. 2015. <span>“Out on the Fields. Bingham Cup Sydney 2014.”</span> <em>Australian Sports Commission, Nielsen Sport.</em> https://doi.org/<a href="https://doi.org/10.26180/5e1e6059a7c0e">https://doi.org/10.26180/5e1e6059a7c0e</a>.
 </div>
+<div id="ref-macdonald2018" class="csl-entry" role="listitem">
+MacDonald, C. A. 2019. <span>“Insert Name of Openly Gay Hockey Player Here - Attitudes Towards Homosexuality Among Canadian Male Major Midget AAA Ice Hockey Players.”</span> <em>Sociology of Sport Journal</em> 35 (4): 347–57. https://doi.org/<a href="http://doi.org/10.1123/ssj.2017-0133">http://doi.org/10.1123/ssj.2017-0133</a>.
 </div>
-<div class="quarto-post image-right" data-index="1" data-listing-file-modified-sort="1714149278562" data-listing-reading-time-sort="8" data-listing-word-count-sort="1518">
-<div class="thumbnail">
-<p><a href="./posts/limits-to-quantitative/limits-to-quantitative-approach.html" class="no-external"></a></p><a href="./posts/limits-to-quantitative/limits-to-quantitative-approach.html" class="no-external">
-<div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
-</a><p><a href="./posts/limits-to-quantitative/limits-to-quantitative-approach.html" class="no-external"></a></p>
+<div id="ref-menzel2019" class="csl-entry" role="listitem">
+Menzel, T., B. Braumuller, and I. Hartmann-Tews. 2019. <span>“The Relevance of Sexual Orientation and Gender Identity in Sport in Europe - Findings from the Outsport Survey.”</span> <em>German Sport University Cologne - Institute of Sociology and Gender</em>.
 </div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/limits-to-quantitative/limits-to-quantitative-approach.html" class="no-external">Limits to the Quantitative Approach to Bias and Fairness</a>
-</h3>
-<div class="listing-subtitle">
-<a href="./posts/limits-to-quantitative/limits-to-quantitative-approach.html" class="no-external"></a>
+<div id="ref-narayanan2022" class="csl-entry" role="listitem">
+Narayanan, Arvind. 2022. <span>“The Limits of the Quantitative Approach to Discrimination.”</span> Speech.
 </div>
-<div class="listing-description">
-<a href="./posts/limits-to-quantitative/limits-to-quantitative-approach.html" class="no-external">In his 2022 lecture, “Limits of the quantitative approach to discrimination,” Arvind Narayanan discusses significant drawbacks in attempts to quantify bias in machine…</a>
-</div>
-</div>
-<div class="metadata">
-<p><a href="./posts/limits-to-quantitative/limits-to-quantitative-approach.html" class="no-external"></a></p><a href="./posts/limits-to-quantitative/limits-to-quantitative-approach.html" class="no-external">
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
