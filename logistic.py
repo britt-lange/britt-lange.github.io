@@ -119,6 +119,22 @@ class GradientDescentOptimizer():
         self.w_prev = None
     
     def step(self, X, y, alpha = 0.1, beta = 0.9):
+        
+        """
+        Update weight vectors with Spicy Gradient Descent.
+
+        ARGUMENTS:
+            X, torch.Tensor: the feature matrix. X.size() == (n, p),
+            where n is the number of data points and p is the
+            number of features. This implementation always assumes
+            that the final column of X is a constant column of 1s.
+            y, torch.Tensor: the true labels. y.size() == (n,)
+            alpha, float: learning rate 1
+            beta, float: learning rate 2 – momentum
+
+            
+        
+        """
         curr = self.model.w 
         if self.w_prev is None:
             self.model.w = self.model.w - (alpha * self.model.grad(X,y))
