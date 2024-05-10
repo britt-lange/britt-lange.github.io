@@ -46,7 +46,7 @@ class LinearModel:
         # Compute the scores
         scores = self.score(X)
         # Apply sigmoid function to convert to binary values
-        return torch.sigmoid(scores).float() 
+        return torch.where(scores > 0, 1.0, 0.0)
     
 class LogisticRegression(LinearModel):
     
@@ -99,7 +99,8 @@ class LogisticRegression(LinearModel):
         """
         
         # Compute scores and apply sigmoid
-        s = self.predict(X)
+        s = self.score(X)
+        s = torch.sigmoid(s)
         
         #convert size of y and scores matrix from (n,) to (n, 1)
         s_ = s[:, None]
