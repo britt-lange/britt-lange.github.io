@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>My Awesome CSCI 0451 Blog - Abstract</title>
+<title>My Awesome CSCI 0451 Blog - Implementing Logistic Regression</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -165,7 +165,7 @@ background-size: cover;
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Abstract</h1>
+      <h1 class="title">Implementing Logistic Regression</h1>
                       </div>
   </div>
     
@@ -200,8 +200,10 @@ background-size: cover;
   %reload_ext autoreload</code></pre>
 </div>
 </div>
-<section id="abstract" class="level1">
-<h1>Abstract</h1>
+<section id="implementing-logistic-regression" class="level1">
+<h1>Implementing Logistic Regression</h1>
+<section id="abstract" class="level2">
+<h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
 <p>In this post I provide several experiments with logistic regression with differing parameters. Here is a link to my <a href="https://github.com/britt-lange/britt-lange.github.io/blob/main/logistic.py">logistic.py</a> file, including my implementation for logistic regression with Spicy Gradient Descent, which includes two learning rate parameters.</p>
 <p>Through three experiments, I demonstrate the effects of varying parameters of the classification data and logistic model. The first experiment demonstrates Vanilla gradient descent with only one learning rate parameter, showing how the loss decreases monotonically over time. The second experiment adds a second learning rate, demonstrating the effects of Spicy Gradient Descent, and how the weight vector converges much more quickly than with Vanilla gradient descent. The final experiment demonstrates the effects of overfitting to the training data, causing poorer performance on the test data.</p>
 <p>First I will define a function that generates classification data to be used in the logistic model. The parameters describe the number of data points, the noise level (describing variation in the data), and the dimensions of the data matrix.</p>
@@ -215,6 +217,7 @@ background-size: cover;
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X, y </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
 <section id="experiment-1-vanilla-gradient-descent" class="level2">
 <h2 class="anchored" data-anchor-id="experiment-1-vanilla-gradient-descent">Experiment 1: Vanilla Gradient Descent</h2>
 <p>Here I implement Vanillla Gradient Descent, which involves a beta learning rate of 0. This erases the effect of Spicy Gradient Descent, using only one learning rate. The classification data I generate uses 2 dimensions and a noise level of 0.5. I fit the logistic regression model and gradient descent optimizer, define a vector that will track the loss, and train the model over 100 iterations with a learning rate of alpha=0.1.</p>
