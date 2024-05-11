@@ -189,81 +189,96 @@ background-size: cover;
 
 
 
-<div id="cell-0" class="cell" data-execution_count="45">
+<div id="cell-0" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>load_ext autoreload </span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>autoreload <span class="dv">2</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> logistic <span class="im">import</span> LogisticRegression, GradientDescentOptimizer</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> matplotlib <span class="im">import</span> pyplot <span class="im">as</span> plt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>The autoreload extension is already loaded. To reload it, use:
-  %reload_ext autoreload</code></pre>
-</div>
 </div>
 <section id="implementing-logistic-regression" class="level1">
 <h1>Implementing Logistic Regression</h1>
 <section id="abstract" class="level2">
 <h2 class="anchored" data-anchor-id="abstract">Abstract</h2>
-<p>In this post I provide several experiments with logistic regression with differing parameters. Here is a link to my <a href="https://github.com/britt-lange/britt-lange.github.io/blob/main/logistic.py">logistic.py</a> file, including my implementation for logistic regression with Spicy Gradient Descent, which includes two learning rate parameters.</p>
+<p>In this post I provide several experiments with logistic regression with differing parameters. Here is a link to my <a href="https://github.com/britt-lange/britt-lange.github.io/blob/main/posts/logistic/logistic.py">logistic.py</a> file, including my implementation for logistic regression with Spicy Gradient Descent, which includes two learning rate parameters.</p>
 <p>Through three experiments, I demonstrate the effects of varying parameters of the classification data and logistic model. The first experiment demonstrates Vanilla gradient descent with only one learning rate parameter, showing how the loss decreases monotonically over time. The second experiment adds a second learning rate, demonstrating the effects of Spicy Gradient Descent, and how the weight vector converges much more quickly than with Vanilla gradient descent. The final experiment demonstrates the effects of overfitting to the training data, causing poorer performance on the test data.</p>
 <p>First I will define a function that generates classification data to be used in the logistic model. The parameters describe the number of data points, the noise level (describing variation in the data), and the dimensions of the data matrix.</p>
-<div id="cell-3" class="cell" data-execution_count="46">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> classification_data(n_points <span class="op">=</span> <span class="dv">300</span>, noise <span class="op">=</span> <span class="fl">0.2</span>, p_dims <span class="op">=</span> <span class="dv">2</span>):</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> torch.arange(n_points) <span class="op">&gt;=</span> <span class="bu">int</span>(n_points<span class="op">/</span><span class="dv">2</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="fl">1.0</span><span class="op">*</span>y</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> y[:, <span class="va">None</span>] <span class="op">+</span> torch.normal(<span class="fl">0.0</span>, noise, size <span class="op">=</span> (n_points,p_dims))</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> torch.cat((X, torch.ones((X.shape[<span class="dv">0</span>], <span class="dv">1</span>))), <span class="dv">1</span>)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X, y </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-3" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> classification_data(n_points <span class="op">=</span> <span class="dv">300</span>, noise <span class="op">=</span> <span class="fl">0.2</span>, p_dims <span class="op">=</span> <span class="dv">2</span>):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> torch.arange(n_points) <span class="op">&gt;=</span> <span class="bu">int</span>(n_points<span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    y <span class="op">=</span> <span class="fl">1.0</span><span class="op">*</span>y</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> y[:, <span class="va">None</span>] <span class="op">+</span> torch.normal(<span class="fl">0.0</span>, noise, size <span class="op">=</span> (n_points,p_dims))</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    X <span class="op">=</span> torch.cat((X, torch.ones((X.shape[<span class="dv">0</span>], <span class="dv">1</span>))), <span class="dv">1</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> X, y </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="experiment-1-vanilla-gradient-descent" class="level2">
 <h2 class="anchored" data-anchor-id="experiment-1-vanilla-gradient-descent">Experiment 1: Vanilla Gradient Descent</h2>
 <p>Here I implement Vanillla Gradient Descent, which involves a beta learning rate of 0. This erases the effect of Spicy Gradient Descent, using only one learning rate. The classification data I generate uses 2 dimensions and a noise level of 0.5. I fit the logistic regression model and gradient descent optimizer, define a vector that will track the loss, and train the model over 100 iterations with a learning rate of alpha=0.1.</p>
-<div id="cell-6" class="cell" data-execution_count="47">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>LR <span class="op">=</span> LogisticRegression() </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>opt <span class="op">=</span> GradientDescentOptimizer(LR)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> []</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> classification_data(p_dims <span class="op">=</span><span class="dv">2</span>, noise <span class="op">=</span> <span class="fl">0.5</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>):</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">#keep track of loss over iterations</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> LR.loss(X, y) </span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    loss_vec.append(loss)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    opt.step(X, y, alpha <span class="op">=</span> <span class="fl">0.1</span>, beta <span class="op">=</span> <span class="fl">0.0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-6" class="cell" data-execution_count="20">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>LR <span class="op">=</span> LogisticRegression() </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>opt <span class="op">=</span> GradientDescentOptimizer(LR)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>loss_vec1 <span class="op">=</span> []</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> classification_data(p_dims <span class="op">=</span><span class="dv">2</span>, noise <span class="op">=</span> <span class="fl">0.5</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3000</span>):</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">#keep track of loss over iterations</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> LR.loss(X, y) </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    loss_vec1.append(loss)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    opt.step(X, y, alpha <span class="op">=</span> <span class="fl">0.1</span>, beta <span class="op">=</span> <span class="fl">0.0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Here I define and call several plotting functions to demonstrate the results of the logistic regression model. plot_decision_boundary plots the data separated by the decision boundary with the final loss value, and plot_loss plots the loss vector over time.</p>
-<div id="cell-8" class="cell" data-execution_count="48">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_decision_boundary():</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot the data points</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">'coolwarm'</span>, edgecolors<span class="op">=</span><span class="st">'k'</span>, label<span class="op">=</span><span class="st">'Data Points'</span>)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot the decision boundary line</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    w <span class="op">=</span> LR.w.detach().numpy()  <span class="co"># Convert weight tensor to numpy array</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    x_values <span class="op">=</span> torch.linspace(X[:, <span class="dv">0</span>].<span class="bu">min</span>(), X[:, <span class="dv">0</span>].<span class="bu">max</span>(), <span class="dv">100</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    y_values <span class="op">=</span> <span class="op">-</span>(w[<span class="dv">0</span>] <span class="op">*</span> x_values <span class="op">+</span> w[<span class="op">-</span><span class="dv">1</span>]) <span class="op">/</span> w[<span class="dv">1</span>]  <span class="co"># Compute y values for the decision boundary line</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    plt.plot(x_values, y_values, color<span class="op">=</span><span class="st">'black'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Decision Boundary'</span>)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'x1'</span>)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'x2'</span>)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f'LR Decision Boundary: Loss = </span><span class="sc">{</span>loss_vec[<span class="op">-</span><span class="dv">1</span>]<span class="sc">:.3f}</span><span class="ss">'</span>)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    plt.legend()</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    plt.grid(<span class="va">True</span>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">#plot loss vector</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_loss(loss_vec):</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    plt.plot(torch.arange(<span class="dv">1</span>, <span class="bu">len</span>(loss_vec)<span class="op">+</span><span class="dv">1</span>), loss_vec, color <span class="op">=</span> <span class="st">"black"</span>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    labs <span class="op">=</span> plt.gca().<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Number of gradient descent iterations"</span>, ylabel <span class="op">=</span> <span class="st">"Loss (binary cross entropy)"</span>)</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>plot_decision_boundary()</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>plot_loss(loss_vec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-8" class="cell" data-execution_count="34">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_decision_boundary():</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot the data points</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    plt.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">'coolwarm'</span>, edgecolors<span class="op">=</span><span class="st">'k'</span>, label<span class="op">=</span><span class="st">'Data Points'</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot the decision boundary line</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    w <span class="op">=</span> LR.w.detach().numpy()  <span class="co"># Convert weight tensor to numpy array</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    x_values <span class="op">=</span> torch.linspace(X[:, <span class="dv">0</span>].<span class="bu">min</span>(), X[:, <span class="dv">0</span>].<span class="bu">max</span>(), <span class="dv">100</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    y_values <span class="op">=</span> <span class="op">-</span>(w[<span class="dv">0</span>] <span class="op">*</span> x_values <span class="op">+</span> w[<span class="op">-</span><span class="dv">1</span>]) <span class="op">/</span> w[<span class="dv">1</span>]  <span class="co"># Compute y values for the decision boundary line</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    plt.plot(x_values, y_values, color<span class="op">=</span><span class="st">'black'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="st">'Decision Boundary'</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(<span class="st">'x1'</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(<span class="st">'x2'</span>)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    plt.title(<span class="ss">f'LR Decision Boundary: Loss = </span><span class="sc">{</span>loss_vec1[<span class="op">-</span><span class="dv">1</span>]<span class="sc">:.3f}</span><span class="ss">'</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    plt.legend()</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    plt.grid(<span class="va">True</span>)</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    plt.show()</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">#plot loss vector</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_loss(loss_vec, loss_vec2, exp):</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plot for experiments 1 and 3</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> exp <span class="op">==</span> <span class="dv">1</span> <span class="kw">or</span> exp <span class="op">==</span> <span class="dv">3</span>:</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        plt.plot(torch.arange(<span class="dv">1</span>, <span class="bu">len</span>(loss_vec)<span class="op">+</span><span class="dv">1</span>), loss_vec, color <span class="op">=</span> <span class="st">"black"</span>)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        labs <span class="op">=</span> plt.gca().<span class="bu">set</span>(xlabel <span class="op">=</span> <span class="st">"Number of gradient descent iterations"</span>, ylabel <span class="op">=</span> <span class="st">"Loss (binary cross entropy)"</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    <span class="co">#plot for experiment 2</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> exp <span class="op">==</span> <span class="dv">2</span>:</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>        fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">5</span>))</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>        <span class="co"># plot experiment 1 loss curve with same # of iters as loss vec 2</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        axs[<span class="dv">0</span>].plot(torch.arange(<span class="dv">1</span>, <span class="bu">len</span>(loss_vec2) <span class="op">+</span> <span class="dv">1</span>), loss_vec1[:<span class="bu">len</span>(loss_vec2)], color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        axs[<span class="dv">0</span>].set_xlabel(<span class="st">"Number of gradient descent iterations"</span>)</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        axs[<span class="dv">0</span>].set_ylabel(<span class="st">"Loss (binary cross entropy)"</span>)</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        axs[<span class="dv">0</span>].set_title(<span class="st">"Loss Curve 1"</span>)</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="co"># plot experiment 2 loss curve</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        axs[<span class="dv">1</span>].plot(torch.arange(<span class="dv">1</span>, <span class="bu">len</span>(loss_vec2) <span class="op">+</span> <span class="dv">1</span>), loss_vec2, color<span class="op">=</span><span class="st">"black"</span>)</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>        axs[<span class="dv">1</span>].set_xlabel(<span class="st">"Number of gradient descent iterations"</span>)</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>        axs[<span class="dv">1</span>].set_ylabel(<span class="st">"Loss (binary cross entropy)"</span>)</span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>        axs[<span class="dv">1</span>].set_title(<span class="st">"Loss Curve 2"</span>)</span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>plot_decision_boundary()</span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>plot_loss(loss_vec1, <span class="va">None</span>, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -279,24 +294,25 @@ background-size: cover;
 </div>
 </div>
 </div>
-<p>As can be seen from these plots, the loss continually decreases, from about 0.65 to 0.38, reaching this final value only after all 100 iterations. The decision boundary shows the separation of the two-dimensional data points, appearing to correctly classify most data points.</p>
+<p>As can be seen from these plots, the loss continually decreases, with the “elbow” of the loss curve around 300 iterations, but the weight vector does not converge until around 1500 iterations. The decision boundary shows the separation of the two-dimensional data points, appearing to correctly classify most data points.</p>
 </section>
 <section id="experiment-2-benefits-of-momentum" class="level2">
 <h2 class="anchored" data-anchor-id="experiment-2-benefits-of-momentum">Experiment 2: Benefits of Momentum</h2>
 <p>Here I will use the same data to show that adding a positive beta learning rate, representing momentum, causes the weight vector to converge after fewer iterations than with Vanilla Gradient Descent. This can be shown by plotting the loss vector and observing when the decrease in loss slows down.</p>
-<div id="cell-11" class="cell" data-execution_count="102">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>LR <span class="op">=</span> LogisticRegression() </span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>opt <span class="op">=</span> GradientDescentOptimizer(LR)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> []</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">100</span>):</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> LR.loss(X, y) </span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    loss_vec.append(loss)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add other stuff to e.g. keep track of the loss over time. </span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    opt.step(X, y, alpha <span class="op">=</span> <span class="fl">0.1</span>, beta <span class="op">=</span> <span class="fl">0.9</span>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>plot_loss(loss_vec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-11" class="cell" data-execution_count="35">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>LR <span class="op">=</span> LogisticRegression() </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>opt <span class="op">=</span> GradientDescentOptimizer(LR)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>loss_vec2 <span class="op">=</span> []</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">300</span>):</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> LR.loss(X, y) </span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    loss_vec2.append(loss)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># add other stuff to e.g. keep track of the loss over time. </span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    opt.step(X, y, alpha <span class="op">=</span> <span class="fl">0.1</span>, beta <span class="op">=</span> <span class="fl">0.9</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#plot first two loss vectors together</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>plot_loss(loss_vec1, loss_vec2, <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -305,62 +321,54 @@ background-size: cover;
 </div>
 </div>
 </div>
-<p>This loss plot shows that the “elbow” of the curve lies around 30 iterations, after which the decrease is much more gradual. The most drastic decrease happens much earlier than the Vanilla curve above, after about 15 iterations. As shown with the following print statements, the loss stops significantly decreasing around 40 iterations.</p>
-<div id="cell-13" class="cell" data-execution_count="103">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Loss decrease after 40 iterations: "</span>, <span class="bu">float</span>(loss_vec[<span class="dv">0</span>]<span class="op">-</span>loss_vec[<span class="dv">39</span>]))</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Loss decrease from 40 to 100 iterations: "</span>, <span class="bu">float</span>(loss_vec[<span class="dv">40</span>]<span class="op">-</span>loss_vec[<span class="dv">99</span>]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Loss decrease after 40 iterations:  0.41942232847213745
-Loss decrease from 40 to 100 iterations:  0.020639359951019287</code></pre>
-</div>
-</div>
+<p>These loss plots show the loss vector of the Vanilla Gradient Descent experiment beside the Spicy Gradient Descent curve. With momentum the “elbow” of the curve lies around 30 iterations, after which the decrease is much more gradual until it converges around 100 iterations. The Vanilla loss curve decreased much more gradually and has not begun to converge by the time the second curve has fully converged.</p>
 <p>With a high momentum value, the same alpha learning rate, and the same dataset, the weight vector converges to its final values much sooner than with Vanilla Gradient Descent. Momentum would allow us to train the model over fewer iterations, requiring less time and memory.</p>
 </section>
 <section id="experiment-3-overfitting" class="level2">
 <h2 class="anchored" data-anchor-id="experiment-3-overfitting">Experiment 3: Overfitting</h2>
 <p>In this experiment, I will show how overfitting the model to the training data yields low test accuracy. By training the model on a train set until receiving a very high train accuracy, the model does not generalize as well to test data, because it is fit too closely to the specific data that the model is trained on.</p>
 <p>Here I generate two data sets: train and test. Both sets have the same parameters: four points and 20 dimensions. I will fit the LR model to the train set until receiving a train accuracy of 100%, and then I will test the model on the test data.</p>
-<div id="cell-16" class="cell" data-execution_count="111">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>LR <span class="op">=</span> LogisticRegression() </span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>opt <span class="op">=</span> GradientDescentOptimizer(LR)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> classification_data(p_dims <span class="op">=</span> <span class="dv">20</span>, n_points <span class="op">=</span> <span class="dv">4</span>, noise <span class="op">=</span> <span class="fl">0.4</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> classification_data(p_dims <span class="op">=</span><span class="dv">20</span>, n_points <span class="op">=</span> <span class="dv">4</span>, noise <span class="op">=</span> <span class="fl">0.4</span>)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>loss_vec <span class="op">=</span> []</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>loss <span class="op">=</span> LR.loss(X_train, y_train) </span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>loss_vec.append(loss)</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> loss <span class="op">&gt;</span> <span class="fl">0.001</span>:</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">#keep track of the loss over time. </span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> LR.loss(X_train, y_train) </span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    loss_vec.append(loss)</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    opt.step(X_train, y_train, alpha <span class="op">=</span> <span class="fl">0.01</span>, beta <span class="op">=</span> <span class="fl">0.2</span>)</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="co">#predict y values on train data and calculate train accuracy</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>y_train_pred <span class="op">=</span> LR.predict(X_train)</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>train_accuracy <span class="op">=</span> accuracy_score(y_train, y_train_pred)</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Train accuracy: </span><span class="sc">{</span>train_accuracy <span class="op">*</span> <span class="dv">100</span><span class="sc">}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-15" class="cell" data-execution_count="111">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>LR <span class="op">=</span> LogisticRegression() </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>opt <span class="op">=</span> GradientDescentOptimizer(LR)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> classification_data(p_dims <span class="op">=</span> <span class="dv">20</span>, n_points <span class="op">=</span> <span class="dv">4</span>, noise <span class="op">=</span> <span class="fl">0.4</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> classification_data(p_dims <span class="op">=</span><span class="dv">20</span>, n_points <span class="op">=</span> <span class="dv">4</span>, noise <span class="op">=</span> <span class="fl">0.4</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>loss_vec3 <span class="op">=</span> []</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>loss <span class="op">=</span> LR.loss(X_train, y_train) </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>loss_vec3.append(loss)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> loss <span class="op">&gt;</span> <span class="fl">0.001</span>:</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">#keep track of the loss over time. </span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    loss <span class="op">=</span> LR.loss(X_train, y_train) </span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    loss_vec3.append(loss)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    opt.step(X_train, y_train, alpha <span class="op">=</span> <span class="fl">0.01</span>, beta <span class="op">=</span> <span class="fl">0.2</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co">#predict y values on train data and calculate train accuracy</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>y_train_pred <span class="op">=</span> LR.predict(X_train)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>train_accuracy <span class="op">=</span> accuracy_score(y_train, y_train_pred)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Train accuracy: </span><span class="sc">{</span>train_accuracy <span class="op">*</span> <span class="dv">100</span><span class="sc">}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Train accuracy: 100.0%</code></pre>
 </div>
 </div>
-<div id="cell-17" class="cell" data-execution_count="112">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>plot_loss(loss_vec)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-16" class="cell" data-execution_count="112">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>plot_loss(loss_vec3, <span class="va">None</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="logistic-regression_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="logistic-regression_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>With 3 data points and 10 dimensions, the model trained until the loss reached around 0 and the accuracy on the train accuracy was 100%. The model continued training for over 60,000 iterations, but the loss reached a low value quite early on. As can be seen below, though the training accuracy was 100%, the test accuracy was 75%. Because the model trained on the training set for 60,000 iterations, the train set performed better than the test set, indicating overfitting.</p>
-<div id="cell-19" class="cell" data-execution_count="113">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>y_test_pred <span class="op">=</span> LR.predict(X_test)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>test_accuracy <span class="op">=</span> accuracy_score(y_test, y_test_pred)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test accuracy: </span><span class="sc">{</span>test_accuracy <span class="op">*</span> <span class="dv">100</span><span class="sc">}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>With 4 data points and 20 dimensions, the model trained until the loss reached around 0 and the accuracy on the train accuracy was 100%. The model continued training for over 60,000 iterations, but the loss reached a low value quite early on. As can be seen below, though the training accuracy was 100%, the test accuracy was 75%. Because the model trained on the training set for 60,000 iterations, the train set performed better than the test set, indicating overfitting.</p>
+<div id="cell-18" class="cell" data-execution_count="113">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>y_test_pred <span class="op">=</span> LR.predict(X_test)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>test_accuracy <span class="op">=</span> accuracy_score(y_test, y_test_pred)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Test accuracy: </span><span class="sc">{</span>test_accuracy <span class="op">*</span> <span class="dv">100</span><span class="sc">}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Test accuracy: 75.0%</code></pre>
 </div>
