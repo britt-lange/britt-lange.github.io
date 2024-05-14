@@ -3,6 +3,7 @@
     "listing": "/index.html",
     "items": [
       "/posts/logistic/logistic-regression.html",
+      "/posts/post/REPORT.html",
       "/posts/bias-replication-post/Bias-Replication.html",
       "/posts/music-classification/DeepMusicGenreClassification.html",
       "/posts/limits-to-quantitative/limits-to-quantitative-approach.html"
